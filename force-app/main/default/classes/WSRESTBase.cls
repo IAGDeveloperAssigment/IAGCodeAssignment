@@ -7,7 +7,7 @@ public virtual class WSRESTBase {
     // constants
     public static final String REST_MSG_DATA_FOUND = 'Match Found';
     public static final String REST_MSG_INVALID_REQUEST = 'Invalid Request';
-    public static final String REST_MSG_DATA_NOT_FOUND = 'no toy match found';
+    public static final String REST_MSG_DATA_NOT_FOUND = 'No Toy Match Found';
 
     // variables
     private RestRequest apiRequest {get;set;}
@@ -35,20 +35,23 @@ public virtual class WSRESTBase {
         
         List<Object> objList = new List<Object>();
         List<String> msgs = new List<String>();
-        if(!respMap.isEmpty()){
-            WSAPIRESTResponse resp = new WSAPIRESTResponse();
-            if(respMap.containsKey(REST_MSG_DATA_NOT_FOUND)){
-                resp.data=respMap.get(REST_MSG_DATA_NOT_FOUND);
-                resp.message=REST_MSG_DATA_NOT_FOUND;
-                resp.isSuccess = isSuccess;
-                responses.add(resp);
-            }
-            if(respMap.containsKey(REST_MSG_DATA_FOUND)){
-               resp.data=respMap.get(REST_MSG_DATA_FOUND);
-               resp.message=REST_MSG_DATA_FOUND;
-               resp.isSuccess = isSuccess;
-               responses.add(resp);
-                
+        if(respMap!=null && !respMap.isEmpty()){
+            
+            For(String key :respMap.keySet()){
+                if(key.equalsIgnoreCase(REST_MSG_DATA_NOT_FOUND) && respMap.containsKey(REST_MSG_DATA_NOT_FOUND)){
+                    WSAPIRESTResponse resp1 = new WSAPIRESTResponse();
+                    resp1.data=respMap.get(REST_MSG_DATA_NOT_FOUND);
+                    resp1.message=REST_MSG_DATA_NOT_FOUND;
+                    resp1.isSuccess = isSuccess;
+                    responses.add(resp1);
+                }
+                else if(key.equalsIgnoreCase(REST_MSG_DATA_FOUND) && respMap.containsKey(REST_MSG_DATA_FOUND)){
+                    WSAPIRESTResponse resp2 = new WSAPIRESTResponse();
+                    resp2.data=respMap.get(REST_MSG_DATA_FOUND);
+                    resp2.message=REST_MSG_DATA_FOUND;
+                    resp2.isSuccess = isSuccess;
+                    responses.add(resp2);                    
+                }
             }
             setResponse(statusCode,responses);
         }
