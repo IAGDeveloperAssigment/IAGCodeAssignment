@@ -4,6 +4,8 @@
 *********************************************************************************************************/
 @RestResource(urlMapping='/fetchToys/*')
 //url=/services/apexrest/fetchToys/
+
+//Wrapper to send the response in desired fromat
 global with sharing class FetchToys extends WSRESTBase{
     public class FetchToysResponse {
 		public String name {get;set;}
@@ -24,18 +26,20 @@ global with sharing class FetchToys extends WSRESTBase{
         try{
             String jsonRequest = RestContext.request.requestBody.toString();
             if(!String.isEmpty(jsonRequest) && jsonRequest!='{}'){
-               Map<String,List<String>> toyNamesMap = (Map<String,List<String>>)JSON.deserialize(jsonRequest, Map<String,List<String>>.class);
+               Map<String,List<String>> toyNamesMap = (Map<String,List<String>>)JSON.deserialize(jsonRequest, Map<String,List<String>>.class);//Receive List of Names from the Rest Post Request
                 List<String> toyNames=new List<String>();
                 For(String name :toyNamesMap.keySet()){
                     toyNames.addAll(toyNamesMap.get(name));
                 }  
                 Map<String,Toys__c> resultMap = new Map<String,Toys__c>();
+                //Query records from the Toys object
                 for (toys__c toys :[select name,description__c,price__c,is_available__c from Toys__c where Name IN :toyNames]){
                     resultMap.put(toys.name,toys);
                 }
                 List<FetchToysResponse> foundRecords = new List<FetchToysResponse>();
                 List<String> notFoundRecords = new List<String>();
                 Map<String,Object> responseMap = new Map<String,Object>();
+                //Add response to a map to fecilitate sending mixed responses(Found and Not Found)
                 if(!resultMap.isempty()){
                     for(String toyName :toyNames){
                         if(resultMap.containsKey(toyName)){
@@ -52,10 +56,12 @@ global with sharing class FetchToys extends WSRESTBase{
                     base.setResponse(200, true, null,responseMap,null,null);
                                     
                 }
+                //Send Not found Response if none of the records are found
                 else{
                     base.setDataNotFound(jsonRequest);
                 }
             }
+            //Invalid Response if Inavlid request is sent
             else{
                     base.setInvalidRequest(jsonRequest);
                 }

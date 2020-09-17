@@ -34,18 +34,18 @@ public class FetchToysTest {
         RestContext.response = response;
         FetchToys.findToys();
         String actualValue = response.responseBody.toString();
-        System.assertEquals(200, response.statusCode);
+        System.assertEquals(200, response.statusCode,'Incorrect status code returned');
         System.assert(actualValue.contains('"isSuccess":true'), actualValue);
         request.requestBody = Blob.valueOf('{"Name":["xyr","abci","123"]}');
         FetchToys.findToys();
         String actualValue1 = response.responseBody.toString();
-        System.assertEquals(200, response.statusCode);
+        System.assertEquals(200, response.statusCode,'Incorrect status code returned');
         System.assert(actualValue1.contains('"isSuccess":false'), actualValue1);
         System.assert(actualValue1.contains('"message":"No Toy Match Found"'),actualValue1);
         request.requestBody = Blob.valueOf('{}');
         FetchToys.findToys();
         String actualValue2 = response.responseBody.toString();
-        System.assertEquals(200, response.statusCode);
+        System.assertEquals(200, response.statusCode,'Incorrect status code returned');
         System.assert(actualValue2.contains('"isSuccess":false'), actualValue2);
         System.assert(actualValue2.contains('"message":"Invalid Request"'),actualValue2);
 
@@ -69,7 +69,7 @@ public class FetchToysTest {
 
         String contentType = response.headers.get('Content-Type');
 		String actualValue = response.responseBody.toString();
-		System.assertEquals(400, response.statusCode);
+		System.assertEquals(400, response.statusCode,'Incorrect status code returned');
 		System.assert(actualValue.contains('"isSuccess":false'), actualValue);
         
         Test.stopTest();
