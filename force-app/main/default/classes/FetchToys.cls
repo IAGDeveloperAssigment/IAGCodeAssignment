@@ -4,20 +4,18 @@
 *********************************************************************************************************/
 @RestResource(urlMapping='/fetchToys/*')
 //url=/services/apexrest/fetchToys/
-global without sharing class FetchToys extends WSRESTBase{
-    public static final String REST_MSG_DATA_FOUND = 'Match Found';
-    public static final String REST_MSG_DATA_NOT_FOUND = 'No Toy Match Found';
+global with sharing class FetchToys extends WSRESTBase{
     public class FetchToysResponse {
-		public String Name {get;set;}
-		public String Description {get;set;}
+		public String name {get;set;}
+		public String description {get;set;}
         public Boolean isAvailable {get;set;}
-        public Decimal Price {get;set;}
+        public Decimal price {get;set;}
 
-		public FetchToysResponse(String Name, String Description, Boolean isAvailable,Decimal Price) {
-            this.Name = Name;
-			this.Description = Description;
+		public FetchToysResponse(String name, String description, Boolean isAvailable,Decimal price) {
+            this.name = name;
+			this.description = description;
             this.isAvailable = isAvailable;
-            this.Price=Price;
+            this.price=price;
         }
 	}
     @HttpPost
@@ -25,8 +23,7 @@ global without sharing class FetchToys extends WSRESTBase{
         WSRESTBase base = new WSRESTBase();
         try{
             String jsonRequest = RestContext.request.requestBody.toString();
-           
-            if(String.isNotEmpty(jsonRequest)){
+            if(!String.isEmpty(jsonRequest) && jsonRequest!='{}'){
                Map<String,List<String>> toyNamesMap = (Map<String,List<String>>)JSON.deserialize(jsonRequest, Map<String,List<String>>.class);
                 List<String> toyNames=new List<String>();
                 For(String name :toyNamesMap.keySet()){
@@ -43,13 +40,13 @@ global without sharing class FetchToys extends WSRESTBase{
                     for(String toyName :toyNames){
                         if(resultMap.containsKey(toyName)){
                             Toys__c toyRec = resultMap.get(toyName);
-                            FetchToysResponse toyResp = new FetchToysResponse(toyRec.Name,toyRec.Description__c,toyRec.is_available__c,toyRec.price__c);
+                            FetchToysResponse toyResp = new FetchToysResponse(toyRec.name,toyRec.description__c,toyRec.is_available__c,toyRec.price__c);
                             foundRecords.add(toyResp);
-                            responseMap.put(REST_MSG_DATA_FOUND,foundRecords);
+                            responseMap.put(WSRESTBase.REST_MSG_DATA_FOUND,foundRecords);
                         }
                         else{
                             notFoundRecords.add(toyName);
-                            responseMap.put(REST_MSG_DATA_NOT_FOUND,notFoundRecords);
+                            responseMap.put(WSRESTBase.REST_MSG_DATA_NOT_FOUND,notFoundRecords);
                         }
                     }
                     base.setResponse(200, true, null,responseMap,null,null);

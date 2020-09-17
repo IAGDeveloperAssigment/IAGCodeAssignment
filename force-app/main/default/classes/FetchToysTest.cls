@@ -29,15 +29,25 @@ public class FetchToysTest {
 		RestResponse response = new RestResponse();
         request.requestBody = Blob.valueOf('{"Name":["xyz","abc","123"]}');
 		request.httpMethod = 'POST';
-        request.headers.put('Content-Type', 'application/json');
-		
+        request.headers.put('Content-Type', 'application/json');		
 		RestContext.request = request;
         RestContext.response = response;
-
         FetchToys.findToys();
         String actualValue = response.responseBody.toString();
         System.assertEquals(200, response.statusCode);
-		System.assert(actualValue.contains('"isSuccess":true'), actualValue);
+        System.assert(actualValue.contains('"isSuccess":true'), actualValue);
+        request.requestBody = Blob.valueOf('{"Name":["xyr","abci","123"]}');
+        FetchToys.findToys();
+        String actualValue1 = response.responseBody.toString();
+        System.assertEquals(200, response.statusCode);
+        System.assert(actualValue1.contains('"isSuccess":false'), actualValue1);
+        System.assert(actualValue1.contains('"message":"No Toy Match Found"'),actualValue1);
+        request.requestBody = Blob.valueOf('{}');
+        FetchToys.findToys();
+        String actualValue2 = response.responseBody.toString();
+        System.assertEquals(200, response.statusCode);
+        System.assert(actualValue2.contains('"isSuccess":false'), actualValue2);
+        System.assert(actualValue2.contains('"message":"Invalid Request"'),actualValue2);
 
         Test.stopTest();
 

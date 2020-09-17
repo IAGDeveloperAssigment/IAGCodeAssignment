@@ -30,7 +30,7 @@ public virtual class WSRESTBase {
     }
 
     // Set JSON Response for the service
-    public virtual void setResponse(Integer statusCode,Boolean isSuccess,Object data,Map<String,Object> respMap,String Message,Exception exp){
+    public virtual void setResponse(Integer statusCode,Boolean isSuccess,Object data,Map<String,Object> respMap,String message,Exception exp){
         List<WSAPIRESTResponse> responses = new List<WSAPIRESTResponse>();
         
         List<Object> objList = new List<Object>();
